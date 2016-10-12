@@ -332,6 +332,19 @@ namespace BonCodeAJP13.ServerPackets
             num_headers = goodHeaders.AllKeys.Length; 
             PopulateRawHeaders(httpHeaders["ALL_RAW"]); //we use this to do retranslate the spelling (case) of header names
 
+            //ReEncode URI's per Setting
+            if (BonCodeAJP13Settings.BONCODE_URI_OVERRIDE.Length > 0)
+            {
+                string[] URIVALUES = req_uri.Split('/');
+                string NewURI = "";
+                    foreach (String S in URIVALUES)
+                {
+                    NewURI += "/" + Uri.EscapeUriString(S);
+                }
+                req_uri = NewURI.Remove(0,1);
+            }
+
+
             //populate log values
             if (BonCodeAJP13Settings.BONCODEAJP13_LOG_LEVEL >= BonCodeAJP13LogLevels.BONCODEAJP13_LOG_HEADERS)
             {

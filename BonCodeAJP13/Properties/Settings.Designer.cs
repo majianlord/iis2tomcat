@@ -539,5 +539,21 @@ namespace BonCodeAJP13.Properties {
                 return ((string)(this["DocRoot"]));
             }
         }
+        /// <summary>
+        /// When working with REST API,  IIS decodes the URL before sending to Tomcat,  This setting will allow you to use IIS URL Rewrite to Add a customer header and use that inside of the PATH_INFO sent in from IIS.
+        /// </summary>
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(BonCodeAJP13.Config.BonCodeAJP13SettingProvider))]
+        [global::System.Configuration.SettingsDescriptionAttribute(@"When working with REST API,  IIS decodes the URL before sending to Tomcat,  This setting will allow you to use IIS URL Rewrite to Add a customer header and use that inside of the PATH_INFO sent in from IIS.")]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UriOverRide
+        {
+            get
+            {
+                return ((string)(this["UriOverRide"]));
+            }
+        }
+
     }
 }
