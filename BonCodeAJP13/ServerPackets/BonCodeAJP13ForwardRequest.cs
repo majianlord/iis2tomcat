@@ -333,7 +333,7 @@ namespace BonCodeAJP13.ServerPackets
             PopulateRawHeaders(httpHeaders["ALL_RAW"]); //we use this to do retranslate the spelling (case) of header names
 
             //ReEncode URI's per Setting
-            if (BonCodeAJP13Settings.BONCODE_URI_OVERRIDE.Length > 0)
+            if (BonCodeAJP13Settings.BONCODE_URI_RECODE)
             {
                 string[] URIVALUES = req_uri.Split('/');
                 string NewURI = "";

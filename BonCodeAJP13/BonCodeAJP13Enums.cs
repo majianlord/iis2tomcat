@@ -317,7 +317,7 @@ namespace BonCodeAJP13
         public static string BONCODE_DOCROOT_OVERRIDE = Properties.Settings.Default.DocRoot; // empty string
         
         //URI Override Header
-        public static string BONCODE_URI_OVERRIDE = Properties.Settings.Default.UriOverRide; // empty string
+        public static bool BONCODE_URI_RECODE = Properties.Settings.Default.UriReCode; // empty string
     }  
 
 
