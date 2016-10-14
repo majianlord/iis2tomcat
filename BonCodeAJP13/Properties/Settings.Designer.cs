@@ -540,16 +540,29 @@ namespace BonCodeAJP13.Properties {
             }
         }
         /// <summary>
-        /// When setting UriRecode = True,  Boncode will split the URI on its / and then recode anything between them and re assemle before sending to tomcat.   This is a correction to allow Rest Services that allow spaces in names to process correctly.
+        /// This setting controls weather or not the URI is Reencoded before being sent to tomcat.  This was added to allow Correction of Rest Services that use spaces in the name.
         /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Configuration.SettingsProviderAttribute(typeof(BonCodeAJP13.Config.BonCodeAJP13SettingProvider))]
-        [global::System.Configuration.SettingsDescriptionAttribute(@"When setting UriRecode = True,  Boncode will split the URI on its / and then recode anything between them and re assemle before sending to tomcat.   This is a correction to allow Rest Services that allow spaces in names to process correctly.")]
+        [global::System.Configuration.SettingsDescriptionAttribute(@"This setting controls weather or not the URI is Reencoded before being sent to tomcat.  This was added to allow Correction of Rest Services that use spaces in the name.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool UriRecode {
             get {
                 return ((bool)(this["UriRecode"]));
+            }
+        }
+        /// <summary>
+        /// When this setting has a value it will set a customer header sent to the Client with the Name in the value of connectedServer.   This is usfull for narrowing down which backend server this user is connected to.
+        /// </summary>
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(BonCodeAJP13.Config.BonCodeAJP13SettingProvider))]
+        [global::System.Configuration.SettingsDescriptionAttribute(@"When this setting has a value it will set a customer header sent to the Client with the Name in the value of connectedServer.   This is usfull for narrowing down which backend server this user is connected to.")]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ConnectedServer {
+            get {
+                return ((string)(this["ConnectedServer"]));
             }
         }
     }

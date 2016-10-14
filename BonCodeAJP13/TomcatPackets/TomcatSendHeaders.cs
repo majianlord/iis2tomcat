@@ -112,6 +112,10 @@ namespace BonCodeAJP13.TomcatPackets
                 }
 
             }
+            if (BonCodeAJP13Settings.BONCODE_Server_Name_Header.Length > 0)
+            {
+                retHeaders.Add("X-Tomcat-Server", BonCodeAJP13Settings.BONCODE_Server_Name_Header + "|");
+            }
 
             return retHeaders;
         }
