@@ -396,7 +396,8 @@ namespace BonCodeIIS
 
         /// <summary>
         /// Function to be passed as delegate to BonCodeAJP13 process
-        /// Will pass packet collection content to user browser and flush
+        /// Will pass packet collection content to user browser
+        /// It will either flush or deliver at end of communication cycle
         /// </summary> 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized)]
         void PrintFlush(BonCodeAJP13PacketCollection flushCollection)
@@ -413,7 +414,9 @@ namespace BonCodeIIS
             //Setting Response.bufferOutput to False to Allow for over 1 gig files to be sent
             //p_Context.Response.BufferOutput = false;
 
-            foreach (TomcatReturn flushPacket in flushCollection)
+           
+
+            foreach (TomcatReturn flushPacket in flushCollection.ToArray())
             {
                 try
                 {
@@ -579,8 +582,8 @@ namespace BonCodeIIS
             //attempt to flush now if enabled
             try
             { 
-                //send contents to browser only if user based flush is enabled otherwise wait for IIS to push buffer
-                if (BonCodeAJP13Settings.BONCODEAJP13_AUTOFLUSHDETECTION_TICKS > 0 || BonCodeAJP13Settings.BONCODEAJP13_AUTOFLUSHDETECTION_BYTES > 0)
+                //send contents to client(browser) only if user based flush is enabled otherwise wait for IIS to push buffer
+                if (p_Context.Response.IsClientConnected && (BonCodeAJP13Settings.BONCODEAJP13_AUTOFLUSHDETECTION_TICKS > 0 || BonCodeAJP13Settings.BONCODEAJP13_AUTOFLUSHDETECTION_BYTES > 0))
                 {
                     p_Context.Response.Flush();
                 }
@@ -590,12 +593,11 @@ namespace BonCodeIIS
             {
                 //do nothing. Mostly this occurs if the browser already closed connection with server or headers were already transferred 
                 RecordSysEvent("Error during spool to client (browser may have navigated away): " + e.Message + " " + e.StackTrace, EventLogEntryType.Warning);
-                //we don't need to printerror as the client is gone already
-                //PrintError(p_Context, "", e.Message + " " + e.StackTrace);
             }
 
+            
             //remove the flush collection reference 
-            flushCollection = null;
+            //flushCollection = null;
 
             //signal that we have finished the flush process
             p_FlushInProgress = false;
@@ -1012,6 +1014,7 @@ namespace BonCodeIIS
         /// </summary>
         private void KillConnection()
         {
+       
             try
             {
                 if (p_TcpClient != null)
@@ -1029,6 +1032,7 @@ namespace BonCodeIIS
                 //attempt to add to Application log        
                 RecordSysEvent("Error during KillConnection: " + exp.Message,EventLogEntryType.Error);
             }
+            
         }
 
 
