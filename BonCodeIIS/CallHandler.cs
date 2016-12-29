@@ -410,6 +410,8 @@ namespace BonCodeIIS
             bool isBinary = false;
             long contentLength = 0; //only assigned if content is known
             long transferredBytes = 0;
+            //Setting Response.bufferOutput to False to Allow for over 1 gig files to be sent
+            //p_Context.Response.BufferOutput = false;
 
             foreach (TomcatReturn flushPacket in flushCollection)
             {
@@ -421,7 +423,6 @@ namespace BonCodeIIS
                         TomcatSendHeaders tcshPackage = (TomcatSendHeaders)flushPacket;
                         //get Headers
                         NameValueCollection tomcatHeaders = tcshPackage.GetHeaders();
-
                         try
                         {
 
