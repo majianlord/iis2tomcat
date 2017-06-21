@@ -134,7 +134,8 @@ namespace BonCodeIIS
                     catch (Exception exp)
                     {
                         BonCodeAJP13Settings.BonCodeAjp13_PhysicalFilePath = "";
-                        RecordSysEvent("Setting blank AJP physical path: " + exp.Message, EventLogEntryType.Warning);
+                        // remove recording for now since this can fill up the log unnecessarily
+                        // RecordSysEvent("Setting blank AJP physical path: " + exp.Message, EventLogEntryType.Warning);
                     }
 
                     //check whether we are resuable, we discard and re-establish connections if MAX_BONCODEAJP13_CONCURRENT_CONNECTIONS is set to zero
@@ -167,7 +168,7 @@ namespace BonCodeIIS
                             blnProceed = false;
                             string errMsg = "Error connecting to Apache Tomcat instance.<hr>Please check that a Tomcat server is running at given location and port.<br>Details:<br>" + e.Message + "<br><small><small><br>You can change this message by changing TomcatConnectErrorURL setting in setting file.</small></small>";
                             //use the PrintEror function, it will check for redirect already
-                            RecordSysEvent("Connection error 1: " + e.Message, EventLogEntryType.Error);
+                            RecordSysEvent("Connection error 1: " + e.Message + " " + e.StackTrace, EventLogEntryType.Error);
                             PrintError(context, errMsg, e.Message + " " + e.StackTrace);                
 
                         }
@@ -347,6 +348,7 @@ namespace BonCodeIIS
                 //this is where we set the status code to 500
                 //context.Response.StatusCode = 500;
                 KillConnection(); //remove TCP connection and cache
+                RecordSysEvent("InvalidOperationsException: " + e.Message + " " + e.StackTrace, EventLogEntryType.Error);
                 PrintError(context, ".", e.Message + " " + e.StackTrace);
             }
             catch (HttpException e)
@@ -355,12 +357,14 @@ namespace BonCodeIIS
                 
                 KillConnection(); //remove TCP connection and cache
                 string strErr = "IIS Web Processing Exception (" + e.GetHttpCode().ToString() + "):<hr>" + e.Message + "<br><small>For maximum request size limit errors please have administrator adjust maxRequestLength and/or maxAllowedContentLength.</small><br>";
+                RecordSysEvent("HttpException: " + e.Message + " " + e.StackTrace, EventLogEntryType.Error);
                 PrintError(context, strErr, e.StackTrace);
            
             }
             catch (Exception e)  //Global Exception catcher
             {
                 KillConnection(); //remove TCP connection and cache
+                RecordSysEvent("ProcessRequest: " + e.Message + " " + e.StackTrace, EventLogEntryType.Error);
                 PrintError(context, ".", e.Message + " " + e.StackTrace);
 
             }
@@ -573,7 +577,7 @@ namespace BonCodeIIS
                 catch (Exception e)
                 {
                     //display error
-                    RecordSysEvent("Error flushing data: " + e.Message, EventLogEntryType.Error);
+                    RecordSysEvent("Error flushing data: " + e.Message + " " + e.StackTrace, EventLogEntryType.Error);
                     PrintError(p_Context, ".", e.Message + " " + e.StackTrace);
                 }
 
@@ -658,7 +662,6 @@ namespace BonCodeIIS
         /// Determine if local call and print error on screen.
         /// PublicError will be displayed to all users
         /// LocalError will be displayed to local users (such as stack trace)
-        /// TODO: This will be extended in the future to log errors to file.
         /// </summary>
         private void PrintError(HttpContext context,String strPublicErr=".", String strLocalErr="")
         {
@@ -677,7 +680,7 @@ namespace BonCodeIIS
             //we will need to redirect to alternate URL if we have connect error URL setting defined -- we will add an errorcode and detail
             if (BonCodeAJP13Settings.BONCODEAJP13_TOMCAT_DOWN_URL.Length > 5)
             {
-                
+                string strFullUrl = "";
                 //does the connect error URL contain URL parameters already change the bind character
                 if (BonCodeAJP13Settings.BONCODEAJP13_TOMCAT_DOWN_URL.IndexOf('?') >= 0)
                 {
@@ -688,13 +691,18 @@ namespace BonCodeIIS
                 {
                     strPublicErr = strPublicErr + "-" + strLocalErr;
                     //truncate error message to 1200 characters for now, this will grow a bit with encoding but we want to be below 2000 characters as many gateways restrict URL parameters
-                    strPublicErr = HttpUtility.UrlPathEncode(strPublicErr.Substring(0, Math.Min(strPublicErr.Length, 1199))); 
+                    //strPublicErr = HttpUtility.UrlPathEncode(strPublicErr.Substring(0, Math.Min(strPublicErr.Length, 1199)));
+                    strPublicErr = HttpUtility.UrlEncode(HttpUtility.HtmlEncode(strPublicErr.Substring(0, Math.Min(strPublicErr.Length, 1199))));
                     //create fully formed URL
-                    string strFullUrl = BonCodeAJP13Settings.BONCODEAJP13_TOMCAT_DOWN_URL + strBindChar + "errorcode=" + strErrorCode + "&detail=" + strPublicErr ;
-                    //redirect to fully formed ULR
-                    context.Response.Redirect(strFullUrl);
+                    strFullUrl = BonCodeAJP13Settings.BONCODEAJP13_TOMCAT_DOWN_URL + strBindChar + "errorcode=" + strErrorCode + "&detail=" + strPublicErr ;
+
+                } else {
+                    // non local IP use redirect without detail message
+                    strFullUrl = BonCodeAJP13Settings.BONCODEAJP13_TOMCAT_DOWN_URL + strBindChar + "errorcode=" + strErrorCode + "&detail=";
                 }
 
+                //redirect to fully formed URL
+                context.Response.Redirect(strFullUrl);
             }
             else
             {
@@ -715,13 +723,13 @@ namespace BonCodeIIS
                     }
                     catch(Exception exp )
                     {
-                        RecordSysEvent("PrintError setting Statuscode: " + exp.Message, EventLogEntryType.Warning);
+                        RecordSysEvent("PrintError setting Statuscode: " + exp.Message + " Trace:" + exp.StackTrace, EventLogEntryType.Warning);
                     };
 
 
                 } catch (Exception e)
                 {
-                    RecordSysEvent("PrintError failed: " + e.Message, EventLogEntryType.Error);
+                    RecordSysEvent("PrintError failed: " + e.Message + " Trace:" + e.StackTrace, EventLogEntryType.Error);
                 }
             }
 
@@ -1120,17 +1128,16 @@ namespace BonCodeIIS
             sEvent = message;
 
             //we only record events when event source exists
-            if (EventLog.SourceExists(sSource))
+            try
             {
-                //record in event log
-                try
+                if (EventLog.SourceExists(sSource))
                 {
+                    //record in event log        
                     EventLog.WriteEntry(sSource, sEvent, eType, 417);
-                } catch
-                {
-                    //do nothing for now
                 }
 
+            } catch {
+                //do nothing for now
             }
         }
 

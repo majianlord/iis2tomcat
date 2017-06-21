@@ -194,7 +194,7 @@ namespace BonCodeAJP13.Properties {
         [global::System.Configuration.SettingsDescriptionAttribute("Number of milliseconds to wait before we stop listening for more traffic. 1000ms=" +
             "1s. Default 120000 (20 min).")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1200000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int ReadTimeOut {
             get {
                 return ((int)(this["ReadTimeOut"]));
@@ -209,7 +209,7 @@ namespace BonCodeAJP13.Properties {
         [global::System.Configuration.SettingsDescriptionAttribute("Number of milliseconds to wait until we stop writing to tomcat. 1000ms=1s. Defaul" +
             "t 30000 (30s).")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int WriteTimeOut {
             get {
                 return ((int)(this["WriteTimeOut"]));
