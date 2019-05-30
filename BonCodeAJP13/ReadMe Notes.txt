@@ -2,15 +2,20 @@
 Notes on AJP13 implementation:
 Licensed under Apache License, Version 2.0
 
+Automatic Installation:
+-----------------------
+- run installer if possible (Connector_Setup.exe) to handle all the details
 
-Installation:
--------------
-IIS7:
+
+Manual Installation:
+-------------------
+IIS7 - IIS10:
 -Need IIS .net extensibility feature on IIS7
 -create BIN directory under web-document root e.g. c:\inetpub\wwwroot\BIN
 -copy the dll files in the BonCodeIIS project into BIN directory
 -register handler for extension(Request Path) using Type:
 BonCodeIIS.BonCodeCallHandler
+
 
 
 Test Remaining:
@@ -37,8 +42,10 @@ All Upper:
 
 
 Main Test Environment:
-	Railo-Administrator
+	Tomcat with Lucee	
 	Axis2 webservices
+
+==========================================
 
 Version 0.9.1 Updates:
 * Add: Added automated installer beta (all windows versions from XP on)
@@ -314,6 +321,29 @@ Version 1.0.35 Updates:
 
 Version 1.0.36 Updates:
 * Upd: change TCP Read/Write timeout setting behavior. Now if these timeouts are not set, they default to infinite (they do not timeout).
+
+Version 1.0.37 Updates:
+* Fix: Array out of bound issues when marker bytes where at the end of network package
+* Fix: Timing issue with packet delivery. Introduce wait for variable speed networks and network latency.
+* Fix: Apache Axis Soap processor embedded in Adobe ColdFusion will not instantiate when CONTENT_LENGTH is specified as zero
+* Upd: Moved to minumum requirement of .net Framework 4.5
+* Upd: Removed .net framework 3.5 distribution
+
+Version 1.0.38 Updates:
+* Upd: block /pms path from being used when admin access from remote is not allowed. This is for Adobe CF.
+* Fix: location of global setting file was placed under GAC rather then c:\windows
+* Add: read timeout of 6s for silent or errand connections that stop responding
+
+Version 1.0.39 Updates:
+* Upd: associate ReadTimeout setting with errand connection timeout and default to 120000 (2 minutes)
+* Upd: Remove WriteTimeout setting
+
+Version 1.0.40 Updates:
+* Fix: do not allow remote call for setup of WindowsEventSource. This will lead to uneccessary error messages.
+
+
+Version 1.0.41 Updates:
+* Fix: to avoid file upload timeout reduce wait time for network data to arrive to avoid uncessary timeouts.
 
 
 --------------------------------------

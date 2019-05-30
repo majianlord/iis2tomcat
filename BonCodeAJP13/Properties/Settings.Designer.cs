@@ -12,7 +12,7 @@ namespace BonCodeAJP13.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -194,7 +194,7 @@ namespace BonCodeAJP13.Properties {
         [global::System.Configuration.SettingsDescriptionAttribute("Number of milliseconds to wait before we stop listening for more traffic. 1000ms=" +
             "1s. Default 120000 (20 min).")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("120000")]
         public int ReadTimeOut {
             get {
                 return ((int)(this["ReadTimeOut"]));
